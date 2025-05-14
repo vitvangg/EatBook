@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema({
     displayName: { type: String, required: true },
-    email: { type: String, required: true, unique: true },
+    email: { type: String, required: true, unique: true, trim: true },
     dateOfBirth: { type: Date },
     gender: { type: String, enum: ['male', 'female', 'other']},
     password: { type: String , required: true, select: false},
@@ -14,6 +14,10 @@ const userSchema = new mongoose.Schema({
     // flollow
     follower: [{ type: mongoose.Schema.Types.ObjectId , ref: 'User'}],
     following: [{ type: mongoose.Schema.Types.ObjectId , ref: 'User'}],
+
+    //Blogs
+    posts: [{ type: mongoose.Schema.Types.ObjectId , ref: 'Post'}],
+    comments: [{ type: mongoose.Schema.Types.ObjectId , ref: 'Comment'}],
 
     // Tiểu sử
     bio: {
