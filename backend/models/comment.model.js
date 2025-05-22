@@ -16,5 +16,5 @@ const commentSchema = new mongoose.Schema({
     timestamps: true
 })
 
-const Commit = mongoose.model("Commit", commentSchema)
-export default Commit;
+const Comment = mongoose.model("Comment", commentSchema)
+export default Comment;
