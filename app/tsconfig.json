@@ -1,0 +1,15 @@
+// tsconfig.json
+{
+  "extends": "expo/tsconfig.base",
+  "compilerOptions": {
+    "jsx": "react-native",
+    "strict": true,
+  },
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    "**/*.js",
+    "**/*.jsx",
+    "src/**/*" // Đảm bảo dòng này hoặc tương tự có ở đây
+  ]
+}
