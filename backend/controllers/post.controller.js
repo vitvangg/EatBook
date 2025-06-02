@@ -106,7 +106,7 @@ export const updatePost = async (req, res) => {
             return res.status(400).json({ success: false, message: "Invaild Post ID" })
         }
         const postExists = await Post.findById(id)
-        const isAdmin = req.user.role.equals('admin')
+        const isAdmin = req.user.role === 'admin'
         if (!postExists.author.equals(req.user._id) && !isAdmin) {
             return res.status(403).json({ success: false, message: "User is not author of this post! Can't update!" })
         }
@@ -178,7 +178,7 @@ export const updatePost = async (req, res) => {
 export const deletePost = async (req, res) => {
     try {
         const { id } = req.params;
-        const isAdmin = req.user.role.equals('admin')
+        const isAdmin = req.user.role === 'admin'
         if (!mongoose.Types.ObjectId.isValid(id)) {
             return res.status(400).json({ success: false, message: "Invaild Post ID" })
         }
@@ -268,7 +268,7 @@ export const singlePost = async (req, res) => {
 }
 export const searchPost = async (req, res) => {
     try {
-        const { q, page = 1, limit = 20 } = req.query;
+        const { q, tag, page = 1, limit = 20 } = req.query;
         if (!q) {
             return res.status(400).json({ success: false, message: "Missing search keyword" });
         }
@@ -277,12 +277,18 @@ export const searchPost = async (req, res) => {
         const skip = (pageNumber - 1) * limitNumber;
 
         const searchQuery = {
-            $or: [
-                { title: { $regex: q, $options: 'i' } },
-                { bookName: { $regex: q, $options: 'i' } },
-                { content: { $regex: q, $options: 'i' } },
+            $and: [
+                {
+                    $or: [
+                        { title: { $regex: q, $options: 'i' } },
+                        { bookName: { $regex: q, $options: 'i' } },
+                        { content: { $regex: q, $options: 'i' } },
+                    ]
+                },
+                tag ? { tags: tag } : {} // nếu có truyền tag thì thêm điều kiện
             ]
         }
+
         const posts = await Post.find(searchQuery)
             .sort({ createdAt: -1 })
             .skip(skip)

@@ -50,7 +50,7 @@ export const listContact = async (req, res) => {
         const postExists = await Post.findById(postID)
         const isCommentAuthor = commentExists.author.equals(userID); // nếu là tác giả của comment
         const isPostAuthor = postExists.author.equals(userID); // nếu là tác giả của bài viết
-        const isAdmin = req.user.role.equals('admin')
+        const isAdmin = req.user.role === 'admin'
         if (!commentExists) {
             return res.status(400).json({ success: false, message: "This comment don't exists !" })
         }
