@@ -4,10 +4,15 @@ import User from '../models/user.model.js'
 import Post from '../models/post.model.js'
 import Comment from '../models/comment.model.js'
 import jwt from 'jsonwebtoken'
+import formidable from "formidable";
+import { baseProject } from '../utils/dirname.js'
+import path from 'path';
+import fs from 'fs'
+
 
 export const signIn = async (req, res) => {
     try {
-        const { displayName, email, password } = req.body;
+        const { displayName, email, password, role } = req.body;
 
         const saltRounds = 10;
 
@@ -32,7 +37,8 @@ export const signIn = async (req, res) => {
         const user = new User({
             displayName,
             email,
-            password: handedPassword
+            password: handedPassword,
+            role
         })
         const result = await user.save();
         if (!result) {
@@ -54,7 +60,7 @@ export const signIn = async (req, res) => {
         })
         res.status(201).json({ success: true, message: `User Sign in successfully! hello ${result.displayName}` })
     } catch (error) {
-        console.error("error in fetching products:", error.message);
+        console.error("error: :", error.message);
         res.status(400).json({ success: false, message: "Server Error in Sign-in" })
     }
 }
@@ -87,7 +93,7 @@ export const logIn = async (req, res) => {
         })
         res.status(200).json({ success: true, message: `User Login in successfully! hello ${userExists.displayName}` })
     } catch (error) {
-        console.error("error in fetching products:", error.message);
+        console.error("error: :", error.message);
         res.status(400).json({ success: false, message: "Server Error in Login-in" })
     }
 }
@@ -95,7 +101,9 @@ export const logIn = async (req, res) => {
 export const getUserDetail = async (req, res) => {
     try {
         const { id } = req.params;
-
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ success: false, message: 'Invalid user id' });
+        }
         const userExists = await User.findById(id)
             .populate('followers')
             .populate('following')
@@ -103,13 +111,13 @@ export const getUserDetail = async (req, res) => {
             .populate({ path: 'posts', populate: [{ path: 'likes' }, { path: 'comment' }, { path: 'author' }] })
             .populate({ path: 'comments', populate: { path: 'author' } })
 
-        console.log(userExists)
+
         if (!userExists) {
             return res.status(400).json({ success: false, message: "User didn't exists!" })
         }
         res.status(200).json({ success: true, data: userExists })
     } catch (error) {
-        console.error("error in fetching products:", error.message);
+        console.error("error: :", error.message);
         res.status(400).json({ success: false, message: "Server Error in User Detail" })
     }
 }
@@ -138,9 +146,119 @@ export const followUser = async (req, res) => {
             { new: true }
         );
         res.status(201).json({ message: `${req.user.displayName} Follow ${userExists.displayName}` })
-    
+
     } catch (error) {
-    console.error("error in fetching products:", error.message);
-    res.status(400).json({ success: false, message: "Server Error in Follow User" })
+        console.error("error: :", error.message);
+        res.status(400).json({ success: false, message: "Server Error in Follow User" })
+    }
 }
+export const updateProfile = async (req, res) => {
+    try {
+        const uploadDir = path.join(baseProject, 'uploads');
+
+        // Tạo thư mục uploads nếu chưa tồn tại
+        if (!fs.existsSync(uploadDir)) {
+            fs.mkdirSync(uploadDir, { recursive: true });
+        }
+
+        const userExists = await User.findById(req.user._id)
+        if (!userExists) {
+            return res.status(400).json({ success: false, message: "User didn't exists!" })
+        }
+        const form = new formidable.IncomingForm();
+        form.parse(req, async (err, fields, files) => {
+            if (err) {
+                console.error(err)
+                return res.status(400).json({ success: false, message: "Error in Formidable" })
+            }
+            const updateInfo = {}; // update ảnh
+            const updateBio = {}
+
+            // update bio
+            if (fields.job) {
+                updateBio.job = fields.job;
+            }
+            if (fields.education) {
+                updateBio.education = fields.education;
+            }
+            if (files.currentPlaces) {
+                updateBio.currentPlaces = fields.currentPlaces.split(',').map(x => x.trim())
+            }
+            if (Object.keys(updateBio).length > 0) updateInfo.bio = updateBio;
+            //update image
+            if (files.avatarUrl) {
+                const file = files.avatarUrl;
+                const tempPath = file.filepath;  // nơi lưu file tạm
+                const fileName = `${Date.now()}-${file.originalFilename}`
+                const newpath = path.join(uploadDir, fileName)
+
+
+                // Copy file sang nơi mới
+                fs.copyFileSync(tempPath, newpath);
+
+                // Xóa file tạm
+                fs.unlinkSync(tempPath); // chuyển file tạm vào thư mục uploads
+                updateInfo.avatarUrl = `/uploads/${fileName}`;
+            }
+
+            if (files.backgroundUrl) {
+                const file = files.backgroundUrl;
+                const tempPath = file.filepath; //tmp/upload_82de230c96.jpg
+                const fileName = `${Date.now()}-${file.originalFilename}`
+                const newpath = path.join(uploadDir, fileName)
+
+
+                // Copy file sang nơi mới
+                fs.copyFileSync(tempPath, newpath);
+
+                // Xóa file tạm
+                fs.unlinkSync(tempPath);
+                updateInfo.backgroundUrl = `/uploads/${fileName}`;
+            }
+            const updatedUser = await User.findByIdAndUpdate(userExists._id, updateInfo, { new: true });
+            res.status(200).json({ success: true, data: updatedUser });
+        })
+    } catch (error) {
+        console.error("error: :", error.message);
+        res.status(400).json({ success: false, message: "Server Error in Update Profile" })
+    }
+}
+export const searchUser = async (req, res) => {
+    try {
+        const { q } = req.query;
+        if (!q) {
+            return res.status(400).json({ success: false, message: "Missing search keyword" });
+        }
+        const users = await User.find({
+            $or: [
+                { displayName: { $regex: q, $options: 'i' } }
+            ]
+        })
+        res.status(200).json({ success: true, message: "User Searched", data: users })
+    } catch (error) {
+        console.error("error: :", error.message);
+        res.status(400).json({ success: false, message: "Server Error in Search User" })
+    }
+}
+export const logout = async (req, res) => {
+    try {
+        res.cookie('token', '', {
+            maxAge: 0,
+            httpOnly: true,
+            sameSite: "none",
+            secure: true
+        })
+        res.status(200).json({ success: true, message: "You are logged out!" })
+    } catch (error) {
+        console.error("error: :", error.message);
+        res.status(400).json({ success: false, message: "Server Error in Search User" })
+    }
+}
+export const listUser = async (req, res) => {
+    try {
+        
+    } catch (error) {
+        console.error("error: :", error.message);
+        res.status(400).json({ success: false, message: "Server Error in All User" })
+    }
 }

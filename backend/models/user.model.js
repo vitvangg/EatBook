@@ -27,7 +27,14 @@ const userSchema = new mongoose.Schema({
     },
 
     // Danh sách đã chặn
-    blockedUsers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }]
+    blockedUsers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+
+    role: {
+        type: String,
+        enum: ['user', 'admin'],
+        default: 'user'
+    },
+    feedbacks: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }]
 },
     {
         timestamps: true

@@ -6,45 +6,54 @@ const postSchema = new mongoose.Schema({
     },
     title: {
         type: String,
+        default: 'title',
         required: true,
     },
     content: {
         type: String,
-        required: true
     },
-    image: [{
+
+    bookName: {
+        type: String,
+        required: true,
+    },
+    images: [{
         type: String
     }],
-    comment: [{
+    bookImage: {
+        type: String
+    },
+    comments: [{
         type: mongoose.Schema.Types.ObjectId, ref: "Comment"
     }],
     tags: [{
         type: String,
-        enum: [ "Art & Photography",
-                "Biographies & Memoirs",
-                "Business & Economics",
-                "How-To & Self Help",
-                "Children's Books",
-                "Dictionaries",
-                "Education & Teaching",
-                "Fiction & Literature",
-                "Magazines",
-                "Medical & Health",
-                "Parenting & Relationships",
-                "Reference",
-                "Science & Technology",
-                "History & Politics",
-                "Travel & Tourism",
-                "Cookbooks & Food"]
+        enum: ["Art & Photography",
+            "Biographies & Memoirs",
+            "Business & Economics",
+            "How-To & Self Help",
+            "Children's Books",
+            "Dictionaries",
+            "Education & Teaching",
+            "Fiction & Literature",
+            "Magazines",
+            "Medical & Health",
+            "Parenting & Relationships",
+            "Reference",
+            "Science & Technology",
+            "History & Politics",
+            "Travel & Tourism",
+            "Cookbooks & Food",
+            "Other"]
     }],
     likes: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
     }],
-}, 
-{
-    timestamps: true
-})
+},
+    {
+        timestamps: true
+    })
 
 const Post = mongoose.model('Post', postSchema);
 export default Post;

@@ -6,12 +6,11 @@ import dotenv from 'dotenv'
 export const auth = async (req, res, next) => {
     try {
         const token = req.cookies.token;
-        console.log(req.cookies.token)
         if (!token) {
             return res.status(400).json({ success: false, message: "No Token for auth" })
         }
         const decode = jwt.verify(token, process.env.JWT_KEY);
-        console.log(decode)
+
         if (!decode) {
             return res.status(400).json({ success: false, message: "Decode Token Fail!" })
         }
@@ -20,7 +19,7 @@ export const auth = async (req, res, next) => {
             .populate('following')
             .populate('posts')
             .populate('comments');
-        console.log(user)
+
         if (!user) {
             return res.status(400).json({ success: false, message: "No user found!" })
         }
