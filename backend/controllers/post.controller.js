@@ -79,7 +79,7 @@ export const createPost = async (req, res) => {
     }
 }
 
-export const allPost = async (req, res) => {
+export const listPost = async (req, res) => {
     try {
         const { page } = req.query
         let pageNumber = page;

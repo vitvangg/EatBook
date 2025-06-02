@@ -36,10 +36,10 @@ export const addContact = async (req, res) => {
         return res.status(201).json({ success: true, message: `${userExists.displayName} send feedback` });
     } catch (error) {
         console.error("error: ", error.message);
-        res.status(400).json({ success: false, message: "Server Error in add comment" })
+        res.status(400).json({ success: false, message: "Server Error in add contact" })
     }
 }
-export const deleteComment = async (req, res) => {
+export const listContact = async (req, res) => {
     try {
         const { postID, id } = req.params
         const userID = req.user._id
@@ -76,6 +76,6 @@ export const deleteComment = async (req, res) => {
 
     } catch (error) {
         console.error("error: ", error.message);
-        res.status(400).json({ success: false, message: "Server Error in delete comment" })
+        res.status(400).json({ success: false, message: "Server Error in list contact" })
     }
 }

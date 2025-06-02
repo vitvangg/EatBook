@@ -256,9 +256,20 @@ export const logout = async (req, res) => {
 }
 export const listUser = async (req, res) => {
     try {
-        
+        const { page } = req.query
+        let pageNumber = page;
+        if (!page || page === undefined) {
+            pageNumber = 1;
+        }
+        const users = await User.find({})
+            .sort({ createdAt: -1 })
+            .skip((pageNumber - 1) * 10)
+            .limit(10)
+            .populate('author')
+            .populate({ path: 'comments', populate: { path: 'author', model: 'User' } })
+        res.status(200).json({ success: true, message: "Post fetched !", posts })
     } catch (error) {
-        console.error("error: :", error.message);
-        res.status(400).json({ success: false, message: "Server Error in All User" })
+        console.error("error: ", error.message);
+        res.status(400).json({ success: false, message: "Server Error in list all User" })
     }
 }
