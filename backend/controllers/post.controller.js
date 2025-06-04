@@ -81,24 +81,44 @@ export const createPost = async (req, res) => {
 
 export const listPost = async (req, res) => {
     try {
-        const { page } = req.query
-        let pageNumber = page;
-        if (!page || page === undefined) {
-            pageNumber = 1;
-        }
+        const { page = 1, limit = 12 } = req.query;
+        const pageNumber = parseInt(page);
+        const limitNumber = parseInt(limit);
+        const skip = (pageNumber - 1) * limitNumber;
+
         const posts = await Post.find({})
             .sort({ createdAt: -1 })
-            .skip((pageNumber - 1) * 20)
-            .limit(20)
+            .skip(skip)
+            .limit(limitNumber)
             .populate('author')
             .populate('likes')
-            .populate({ path: 'comments', populate: { path: 'author', model: 'User' } })
-        res.status(200).json({ success: true, message: "Post fetched !", posts })
+            .populate({ path: 'comments', populate: { path: 'author', model: 'User' } });
+
+        // Count total for pagination
+        const total = await Post.countDocuments({});
+        const totalPages = Math.ceil(total / limitNumber);
+
+        res.status(200).json({
+            success: true,
+            message: "Posts fetched successfully",
+            data: {
+                posts,
+                pagination: {
+                    currentPage: pageNumber,
+                    totalPages,
+                    totalItems: total,
+                    itemsPerPage: limitNumber,
+                    hasNextPage: pageNumber < totalPages,
+                    hasPreviousPage: pageNumber > 1
+                }
+            }
+        });
     } catch (error) {
-        console.error("error: ", error.message);
-        res.status(400).json({ success: false, message: "Server Error in list all Post" })
+        console.error("error:", error.message);
+        res.status(400).json({ success: false, message: "Server Error in listing posts" });
     }
-}
+};
+
 export const updatePost = async (req, res) => {
     try {
         const { id } = req.params;
@@ -251,19 +271,23 @@ export const likePost = async (req, res) => {
 }
 export const singlePost = async (req, res) => {
     try {
-        const { id } = req.params
-        const postExists = Post.findById(id)
-        if (!postExists) {
-            return res.status(400).json({ success: false, message: "Post didn't exists!" })
-        }
-        const post = await Post.find({})
+        const { id } = req.params;
+        const post = await Post.findById(id)
             .populate('author')
             .populate('likes')
-            .populate({ path: 'comments', populate: { path: 'author', model: 'User' } })
-        res.status(200).json({ success: true, message: "This is single post !", post })
+            .populate({
+                path: 'comments',
+                populate: { path: 'author', model: 'User' }
+            });
+
+        if (!post) {
+            return res.status(404).json({ success: false, message: "Post doesn't exist!" });
+        }
+
+        res.status(200).json({ success: true, message: "This is single post!", post });
     } catch (error) {
         console.error("error: ", error.message);
-        res.status(400).json({ success: false, message: "Server Error in single Post" })
+        res.status(500).json({ success: false, message: "Server Error in single Post" });
     }
 }
 export const searchPost = async (req, res) => {

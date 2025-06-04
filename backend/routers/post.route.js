@@ -6,7 +6,7 @@ import { addComment, deleteComment } from '../controllers/comment.controller.js'
 const router = express.Router();
 
 router.post('/createPost', auth, createPost)
-router.get('/post', auth, listPost)
+router.get('/post', listPost)
 router.patch('/post/update/:id', auth, updatePost)
 router.delete('/post/delete/:id', auth, deletePost)
 router.put('/post/like/:id', auth, likePost)
