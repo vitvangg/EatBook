@@ -1,11 +1,6 @@
 import User from "../models/user.model.js";
 import Comment from "../models/comment.model.js";
 import Post from "../models/post.model.js"
-import { baseProject } from "../utils/dirname.js";
-import path from 'path'
-import formidable from "formidable";
-import fs from 'fs'
-import mongoose from "mongoose";
 
 export const addComment = async (req, res) => {
     try {
