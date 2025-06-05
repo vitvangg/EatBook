@@ -71,6 +71,11 @@ export const createPost = async (req, res) => {
             if (!result) {
                 res.status(400).json({ success: false, message: "Server Error in User Saving" })
             }
+            await User.findByIdAndUpdate(
+                req.user._id,
+                { $push: { posts: result._id } },
+                { new: true }
+            );
             return res.status(201).json({ success: true, data: result });
         })
     } catch (error) {

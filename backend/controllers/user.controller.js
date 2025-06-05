@@ -81,17 +81,17 @@ export const logIn = async (req, res) => {
         if (!passwordMatched) {
             return res.status(400).json({ success: false, message: "Password not correct" })
         }
-        const accesToken = jwt.sign({ userID: userExists._id }, process.env.JWT_KEY, { expiresIn: '1h' })
-        if (!accesToken) {
+        const accessToken = jwt.sign({ userID: userExists._id }, process.env.JWT_KEY, { expiresIn: '1h' })
+        if (!accessToken) {
             res.status(400).json({ success: false, message: "Server Error in Generating token for LOGIN!" })
         }
-        res.cookie('token', accesToken, {
-            maxAge: 1000 * 60 * 60,
+        res.cookie('token', accessToken, {
+            maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
             httpOnly: true,
             secure: true,
             sameSite: "none"
         })
-        res.status(200).json({ success: true, message: `User Login in successfully! hello ${userExists.displayName}` })
+        res.status(200).json({ success: true, message: `User Login in successfully! hello ${userExists.displayName}`, UserRole: userExists.role, UserID: userExists._id, displayName: userExists.displayName, avatarUrl: userExists.avatarUrl })
     } catch (error) {
         console.error("error: :", error.message);
         res.status(400).json({ success: false, message: "Server Error in Login-in" })
@@ -256,20 +256,40 @@ export const logout = async (req, res) => {
 }
 export const listUser = async (req, res) => {
     try {
-        const { page } = req.query
-        let pageNumber = page;
-        if (!page || page === undefined) {
-            pageNumber = 1;
-        }
-        const users = await User.find({})
+        const { page = 1, limit = 10 } = req.query;
+        const pageNumber = parseInt(page, 10) || 1;
+        const pageLimit = parseInt(limit, 10) || 10;
+
+        // Điều kiện lọc role là 'user'
+        const filter = { role: 'user' };
+
+        const totalItems = await User.countDocuments(filter);
+        const totalPages = Math.ceil(totalItems / pageLimit);
+
+        const users = await User.find(filter)
             .sort({ createdAt: -1 })
-            .skip((pageNumber - 1) * 10)
-            .limit(10)
-            .populate('author')
-            .populate({ path: 'comments', populate: { path: 'author', model: 'User' } })
-        res.status(200).json({ success: true, message: "Post fetched !", posts })
+            .skip((pageNumber - 1) * pageLimit)
+            .limit(pageLimit)
+            .populate('followers')
+            .populate('following')
+            .populate('blockedUsers')
+            .populate({ path: 'posts', populate: [{ path: 'likes' }, { path: 'comments' }] })
+            .populate({ path: 'comments', populate: { path: 'author' } });
+
+        res.status(200).json({
+            success: true,
+            message: "User fetched!",
+            data: {
+                users,
+                pagination: {
+                    currentPage: pageNumber,
+                    totalPages,
+                    totalItems
+                }
+            }
+        });
     } catch (error) {
         console.error("error: ", error.message);
-        res.status(400).json({ success: false, message: "Server Error in list all User" })
+        res.status(400).json({ success: false, message: "Server Error in list all User" });
     }
-}
+};

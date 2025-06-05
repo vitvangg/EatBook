@@ -9,6 +9,9 @@ import mongoose from "mongoose";
 
 export const addComment = async (req, res) => {
     try {
+        if (!req.user || req.user.role !== "user") {
+            return res.status(403).json({ success: false, message: "Only users can comment!" });
+        }
         const { id } = req.params
         const { content } = req.body
         if (!id) {
@@ -48,19 +51,20 @@ export const addComment = async (req, res) => {
 }
 export const deleteComment = async (req, res) => {
     try {
-        const { postID, id } = req.params
-        const userID = req.user._id
-        if (!id || !postID) {
-            return res.status(400).json({ success: false, message: "ID or postID is required !" })
+        const { id } = req.params;
+        const userID = req.user._id;
+        if (!id) {
+            return res.status(400).json({ success: false, message: "ID is required!" });
         }
-        const commentExists = await Comment.findById(id)
-        const postExists = await Post.findById(postID)
+        const commentExists = await Comment.findById(id);
+        if (!commentExists) {
+            return res.status(400).json({ success: false, message: "This comment doesn't exist!" });
+        }
+        const postExists = await Post.findById(commentExists.post);
         const isCommentAuthor = commentExists.author.equals(userID); // nếu là tác giả của comment
         const isPostAuthor = postExists.author.equals(userID); // nếu là tác giả của bài viết
-        const isAdmin = req.user.role.equals('admin')
-        if (!commentExists) {
-            return res.status(400).json({ success: false, message: "This comment don't exists !" })
-        }
+        const isAdmin = req.user.role === 'admin';
+
         if (!postExists) {
             return res.status(400).json({ success: false, message: "This Post don't exists !" })
         }
@@ -86,3 +90,86 @@ export const deleteComment = async (req, res) => {
         res.status(400).json({ success: false, message: "Server Error in delete comment" })
     }
 }
+export const listCommentByPost = async (req, res) => {
+    try {
+        const { postID } = req.params;
+        const { page = 1, limit = 10 } = req.query;
+        const pageNumber = parseInt(page, 10) || 1;
+        const pageLimit = parseInt(limit, 10) || 10;
+
+        if (!postID) {
+            return res.status(400).json({ success: false, message: "Post ID is required!" });
+        }
+
+        const postExists = await Post.findById(postID);
+        if (!postExists) {
+            return res.status(404).json({ success: false, message: "Post not found!" });
+        }
+
+        const totalItems = await Comment.countDocuments({ post: postID });
+        const totalPages = Math.ceil(totalItems / pageLimit);
+
+        const comments = await Comment.find({ post: postID })
+            .populate('author', 'displayName avatarUrl')
+            .sort({ createdAt: -1 })
+            .skip((pageNumber - 1) * pageLimit)
+            .limit(pageLimit);
+
+        res.status(200).json({
+            success: true,
+            message: "Comments fetched successfully!",
+            data: {
+                comments,
+                pagination: {
+                    currentPage: pageNumber,
+                    totalPages,
+                    totalItems
+                }
+            }
+        });
+    } catch (error) {
+        console.error("error: ", error.message);
+        res.status(400).json({ success: false, message: "Server Error in list comments by post" });
+    }
+}
+export const listComment = async (req, res) => {
+    try {
+        const { page = 1, limit = 10 } = req.query;
+        const pageNumber = parseInt(page, 10) || 1;
+        const pageLimit = parseInt(limit, 10) || 10;
+
+        const totalItems = await Comment.countDocuments();
+        const totalPages = Math.ceil(totalItems / pageLimit);
+
+        const comments = await Comment.find()
+            .sort({ createdAt: -1 })
+            .skip((pageNumber - 1) * pageLimit)
+            .limit(pageLimit)
+            .populate('author', 'displayName avatarUrl')
+            .populate({
+                path: 'post',
+                select: 'title bookName author',
+                populate: {
+                    path: 'author',
+                    select: 'displayName'
+                }
+            })
+
+
+        res.status(200).json({
+            success: true,
+            message: "Comments fetched!",
+            data: {
+                comments,
+                pagination: {
+                    currentPage: pageNumber,
+                    totalPages,
+                    totalItems
+                }
+            }
+        });
+    } catch (error) {
+        console.error("error: ", error.message);
+        res.status(400).json({ success: false, message: "Server Error in list comments" });
+    }
+};

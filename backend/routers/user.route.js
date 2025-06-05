@@ -1,5 +1,5 @@
 import express from 'express'
-import { followUser, getUserDetail, logIn, logout, searchUser, signIn, updateProfile } from '../controllers/user.controller.js';
+import { followUser, getUserDetail, logIn, logout, searchUser, signIn, updateProfile, listUser } from '../controllers/user.controller.js';
 import { auth } from '../middleware/auth.js'
 
 const router = express.Router();
@@ -22,5 +22,6 @@ router.put('/user/follow/:id', auth, followUser)
 
 router.patch('/user/update', auth, updateProfile)
 router.post('/logout', auth, logout)
+router.get('/user', auth, listUser)
 
 export default router;
