@@ -106,7 +106,7 @@ export const getUserDetail = async (req, res) => {
             .populate('followers')
             .populate('following')
             .populate('blockedUsers')
-            .populate({ path: 'posts', populate: [{ path: 'likes' }, { path: 'comment' }, { path: 'author' }] })
+            .populate({ path: 'posts', populate: [{ path: 'likes' }, { path: 'comments' }, { path: 'author' }] })
             .populate({ path: 'comments', populate: { path: 'author' } })
 
 
