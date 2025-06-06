@@ -5,7 +5,6 @@ const contactSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "User"
     },
-    subject: { type: String },
     message: { type: String, required: true },
 }, { timestamps: true });
 

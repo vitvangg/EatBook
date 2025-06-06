@@ -75,21 +75,36 @@ export const logIn = async (req, res) => {
         if (!userExists) {
             return res.status(400).json({ success: false, message: "Email didn't exists! Please Sign-In first!" })
         }
+
         const passwordMatched = await bcrypt.compare(password, userExists.password)
         if (!passwordMatched) {
             return res.status(400).json({ success: false, message: "Password not correct" })
         }
+
         const accessToken = jwt.sign({ userID: userExists._id }, process.env.JWT_KEY, { expiresIn: '1h' })
         if (!accessToken) {
-            res.status(400).json({ success: false, message: "Server Error in Generating token for LOGIN!" })
+            return res.status(400).json({ success: false, message: "Server Error in Generating token for LOGIN!" })
         }
-        res.cookie('token', accessToken, {
-            maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
-            httpOnly: true,
-            secure: true,
-            sameSite: "none"
-        })
-        res.status(200).json({ success: true, message: `User Login in successfully! hello ${userExists.displayName}`, userData: userExists })
+
+        // Tạo response data chung
+        const responseData = {
+            success: true,
+            message: `User Login in successfully! hello ${userExists.displayName}`,
+            userData: userExists,
+            token: accessToken
+        };
+
+        // Chỉ set cookie cho web browsers (không ảnh hưởng React Native)
+        if (req.headers['user-agent'] && !req.headers['user-agent'].includes('okhttp')) {
+            res.cookie('token', accessToken, {
+                maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production', // Chỉ secure khi production
+                sameSite: "none"
+            });
+        }
+
+        res.status(200).json(responseData);
     } catch (error) {
         console.error("error: :", error.message);
         res.status(400).json({ success: false, message: "Server Error in Login-in" })
@@ -215,7 +230,7 @@ export const updateProfile = async (req, res) => {
             }
             const updatedUser = await User.findByIdAndUpdate(userExists._id, fields, { new: true });
             const updatedUserFile = await User.findByIdAndUpdate(userExists._id, files, { new: true });
-            res.status(200).json({ success: true, data: {...updatedUser, ...updatedUserFile } });
+            res.status(200).json({ success: true, data: { ...updatedUser, ...updatedUserFile } });
         })
     } catch (error) {
         console.error("error: :", error.message);
@@ -229,7 +244,7 @@ export const searchUser = async (req, res) => {
             return res.status(400).json({ success: false, message: "Missing search keyword" });
         }
         const users = await User.find({
-            email: email 
+            email: email
         })
         res.status(200).json({ success: true, message: "User Searched", data: users })
     } catch (error) {

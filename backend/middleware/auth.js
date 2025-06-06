@@ -1,12 +1,15 @@
 import User from '../models/user.model.js'
 import jwt from 'jsonwebtoken'
+import bcrypt from 'bcrypt'
 import dotenv from 'dotenv'
-
 
 export const auth = async (req, res, next) => {
     try {
-        // Lấy token từ cookie hoặc header
-        const token = req.cookies.token || (req.headers.authorization?.startsWith("Bearer ") && req.headers.authorization.split(" ")[1]);
+        // Lấy token từ cookie hoặc header (hỗ trợ cả web và mobile)
+        const token = req.cookies?.token ||
+            (req.headers.authorization?.startsWith("Bearer ") &&
+                req.headers.authorization.split(" ")[1]) ||
+            req.headers['x-access-token']; // Thêm header tùy chỉnh cho mobile
 
         if (!token) {
             return res.status(401).json({ success: false, message: "No token provided" });

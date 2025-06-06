@@ -6,6 +6,13 @@ import Contact from "../models/contact.model.js";
 
 export const addContact = async (req, res) => {
     try {
+        if (!req.user || req.user.role !== "user") {
+            return res.status(403).json({
+                success: false,
+                message: "Only users can send contact messages!"
+            });
+        }
+
         const { message } = req.body;
 
         if (!message) {
@@ -46,13 +53,15 @@ export const addContact = async (req, res) => {
 
 export const listContacts = async (req, res) => {
     try {
-        const isAdmin = req.user.role === 'admin';
+        // Chỉ cho phép admin xem danh sách contact
+        if (!req.user || req.user.role !== "admin") {
+            return res.status(403).json({
+                success: false,
+                message: "Only admin can view contact messages!"
+            });
+        }
 
-        const query = isAdmin
-            ? {} // admin xem được tất cả
-            : { author: req.user._id }; // người thường chỉ xem của họ
-
-        const contacts = await Contact.find(query)
+        const contacts = await Contact.find({})
             .sort({ createdAt: -1 })
             .populate('author', 'displayName email');
 
