@@ -1,6 +1,7 @@
 import express from 'express'
 import { followUser, getUserDetail, logIn, logout, searchUser, signIn, updateProfile, listUser } from '../controllers/user.controller.js';
 import { auth } from '../middleware/auth.js'
+import { addContact, listContacts } from '../controllers/contact.controller.js';
 
 const router = express.Router();
 
@@ -23,5 +24,8 @@ router.put('/user/follow/:id', auth, followUser)
 router.patch('/user/update', auth, updateProfile)
 router.post('/logout', auth, logout)
 router.get('/user', auth, listUser)
+router.post('/contact', auth, addContact)
+router.get('/contact/list', auth, listContacts)
+
 
 export default router;

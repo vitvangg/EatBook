@@ -181,7 +181,7 @@ export const updateProfile = async (req, res) => {
             if (fields.education) {
                 updateBio.education = fields.education;
             }
-            if (files.currentPlaces) {
+            if (fields.currentPlaces) {
                 updateBio.currentPlaces = fields.currentPlaces.split(',').map(x => x.trim())
             }
             if (Object.keys(updateBio).length > 0) updateInfo.bio = updateBio;

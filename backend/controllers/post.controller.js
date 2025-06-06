@@ -260,14 +260,14 @@ export const likePost = async (req, res) => {
             },
                 { new: true }
             );
-            return res.status(201).json({ message: `${req.user.displayName} unlike ${postExists.title} write by ${authorName}` })
+            return res.status(201).json({success: true, message: `${req.user.displayName} unlike ${postExists.title} write by ${authorName}` })
         }
         await Post.findByIdAndUpdate(postExists._id, {
             $push: { likes: userID }
         },
             { new: true }
         );
-        res.status(201).json({ message: `${req.user.displayName} like ${postExists.title} write by ${authorName}` })
+        res.status(201).json({success: true, message: `${req.user.displayName} like ${postExists.title} write by ${authorName}` })
 
     } catch (error) {
         console.error("error: :", error.message);
@@ -297,7 +297,7 @@ export const singlePost = async (req, res) => {
 }
 export const searchPost = async (req, res) => {
     try {
-        const { q, tag, page = 1, limit = 20 } = req.query;
+        const { q, tag, page = 1, limit = 12 } = req.query;
         if (!q) {
             return res.status(400).json({ success: false, message: "Missing search keyword" });
         }

@@ -34,7 +34,7 @@ const userSchema = new mongoose.Schema({
         enum: ['user', 'admin'],
         default: 'user'
     },
-    feedbacks: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }]
+    contacts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Contact' }]
 },
     {
         timestamps: true
