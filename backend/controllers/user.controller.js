@@ -1,8 +1,6 @@
 import mongoose from "mongoose";
 import bcrypt from 'bcrypt'
 import User from '../models/user.model.js'
-import Post from '../models/post.model.js'
-import Comment from '../models/comment.model.js'
 import jwt from 'jsonwebtoken'
 import formidable from "formidable";
 import { baseProject } from '../utils/dirname.js'
@@ -91,7 +89,7 @@ export const logIn = async (req, res) => {
             secure: true,
             sameSite: "none"
         })
-        res.status(200).json({ success: true, message: `User Login in successfully! hello ${userExists.displayName}`, UserRole: userExists.role, UserID: userExists._id, displayName: userExists.displayName, avatarUrl: userExists.avatarUrl })
+        res.status(200).json({ success: true, message: `User Login in successfully! hello ${userExists.displayName}`, userData: userExists })
     } catch (error) {
         console.error("error: :", error.message);
         res.status(400).json({ success: false, message: "Server Error in Login-in" })
@@ -108,7 +106,7 @@ export const getUserDetail = async (req, res) => {
             .populate('followers')
             .populate('following')
             .populate('blockedUsers')
-            .populate({ path: 'posts', populate: [{ path: 'likes' }, { path: 'comment' }, { path: 'author' }] })
+            .populate({ path: 'posts', populate: [{ path: 'likes' }, { path: 'comments' }, { path: 'author' }] })
             .populate({ path: 'comments', populate: { path: 'author' } })
 
 
@@ -215,8 +213,9 @@ export const updateProfile = async (req, res) => {
                 fs.unlinkSync(tempPath);
                 updateInfo.backgroundUrl = `/uploads/${fileName}`;
             }
-            const updatedUser = await User.findByIdAndUpdate(userExists._id, updateInfo, { new: true });
-            res.status(200).json({ success: true, data: updatedUser });
+            const updatedUser = await User.findByIdAndUpdate(userExists._id, fields, { new: true });
+            const updatedUserFile = await User.findByIdAndUpdate(userExists._id, files, { new: true });
+            res.status(200).json({ success: true, data: {...updatedUser, ...updatedUserFile } });
         })
     } catch (error) {
         console.error("error: :", error.message);
@@ -225,14 +224,12 @@ export const updateProfile = async (req, res) => {
 }
 export const searchUser = async (req, res) => {
     try {
-        const { q } = req.query;
-        if (!q) {
+        const { email } = req.query;
+        if (!email) {
             return res.status(400).json({ success: false, message: "Missing search keyword" });
         }
         const users = await User.find({
-            $or: [
-                { displayName: { $regex: q, $options: 'i' } }
-            ]
+            email: email 
         })
         res.status(200).json({ success: true, message: "User Searched", data: users })
     } catch (error) {

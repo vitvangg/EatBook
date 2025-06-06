@@ -3,8 +3,8 @@ import mongoose from "mongoose";
 const userSchema = new mongoose.Schema({
     displayName: { type: String, required: true },
     email: { type: String, required: true, unique: true, trim: true },
-    dateOfBirth: { type: Date },
-    gender: { type: String, enum: ['male', 'female', 'other'] },
+    dateOfBirth: { type: Date, required: true, default: new Date('1-1-2002') },
+    gender: { type: String, enum: ['male', 'female', 'other'], required: true },
     password: { type: String, required: true, select: false },
 
     // avatar và background image
