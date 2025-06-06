@@ -255,7 +255,12 @@ export const likePost = async (req, res) => {
         }
         // check like
         if (postExists.likes.includes(userID)) {
-            return
+            await Post.findByIdAndUpdate(postExists._id, {
+                $pull: { likes: userID }
+            },
+                { new: true }
+            );
+            return res.status(201).json({ message: `${req.user.displayName} unlike ${postExists.title} write by ${authorName}` })
         }
         await Post.findByIdAndUpdate(postExists._id, {
             $push: { likes: userID }
