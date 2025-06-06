@@ -1,0 +1,113 @@
+.header-main {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background: linear-gradient(45deg, #f4a261, #e76f51);
+  color: white;
+  font-family: Arial, sans-serif;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  width: 50px;
+  height: auto;
+  margin-right: 10px;
+}
+
+.brand-name {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.header-buttons {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.nav-btn {
+  background-color: #f4a261;
+  border: none;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.write-btn {
+  background-color: #2a9d8f;
+  color: white;
+}
+
+.avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.avatar:hover {
+  transform: scale(1.1);
+}
+
+/* Menu dropdown */
+.dropdown-menu {
+  position: absolute;
+  right: 0;
+  top: 60px;
+  /* hoặc điều chỉnh cho hợp lý */
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+  z-index: 1000;
+  /* Đảm bảo lớn hơn các thành phần khác */
+  min-width: 160px;
+  padding: 8px 0;
+}
+
+.dropdown-item {
+  background-color: transparent;
+  border: none;
+  color: #333;
+  padding: 10px 20px;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+}
+
+.dropdown-item:hover {
+  background-color: #f4a261;
+  color: white;
+}
+
+/* Thêm class cho các nút cần ẩn */
+@media (max-width: 799px) {
+
+  .nav-btn.contact-btn,
+  .nav-btn.write-btn {
+    display: none;
+  }
+}
+
+/* Có thể điều chỉnh lại font, padding cho header ở ngưỡng nhỏ */
+@media (max-width: 799px) {
+  .header-main {
+    padding: 8px 6px;
+  }
+
+  .brand-name {
+    font-size: 1.1rem;
+  }
+
+  .avatar {
+    width: 36px;
+    height: 36px;
+  }
+}

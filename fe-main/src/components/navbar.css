@@ -1,0 +1,70 @@
+/* File: src/components/navbar.css */
+
+/* ──────────────────────
+   Container chính
+   ────────────────────── */
+.navbar-simple {
+  background-color: #f9f9f9;   /* Nền trắng ngả xám rất nhẹ */
+  border-bottom: 1px solid #e0e0e0; /* Đường viền mảnh dưới cùng */
+  position: sticky;            /* Giúp dính top khi cuộn trang */
+  top: 0;
+  z-index: 500;                /* Đảm bảo nằm trên nội dung */
+}
+
+/* ──────────────────────
+   Danh sách ngang
+   ────────────────────── */
+.navbar-list {
+  display: flex;
+  flex-wrap: nowrap;           /* Không xuống dòng */
+  overflow-x: auto;            /* Scroll ngang khi quá dài */
+  margin: 0;
+  padding: 0 16px;             /* Padding trái/phải 16px, trên/dưới 0 */
+  list-style: none;
+  height: 48px;                /* Chiều cao cố định 48px */
+  align-items: center;         /* Căn dọc giữa */
+}
+
+/* Ẩn thanh cuộn cho WebKit (Chrome, Safari...) */
+.navbar-list::-webkit-scrollbar {
+  display: none;
+}
+
+/* ──────────────────────
+   Mỗi mục (item)
+   ────────────────────── */
+.navbar-item {
+  margin-right: 24px;          /* Khoảng cách giữa các item: 24px */
+  padding: 8px 0;              /* Padding trên/dưới 8px, trái/phải 0 */
+  font-size: 14px;
+  color: #333333;              /* Chữ xám đậm */
+  cursor: pointer;
+  white-space: nowrap;         /* Không xuống dòng nếu tiêu đề dài */
+  transition: color 0.2s;
+}
+
+/* ──────────────────────
+   Hiệu ứng khi hover
+   ────────────────────── */
+.navbar-item:hover {
+  color: #007bff;             /* Đổi sang xanh nhạt khi hover */
+}
+
+/* ──────────────────────
+   Item đang active
+   ────────────────────── */
+.navbar-item.active {
+  font-weight: 600;            /* In đậm */
+  color: #007bff;              /* Chữ màu xanh */
+  border-bottom: 2px solid #007bff; /* Gạch chân màu xanh, dày 2px */
+}
+
+/* ──────────────────────
+   Responsive: Giảm margin khi màn hình dưới 600px
+   ────────────────────── */
+@media (max-width: 600px) {
+  .navbar-item {
+    margin-right: 16px;        /* Giảm khoảng cách còn 16px */
+    font-size: 13px;           /* Giảm cỡ chữ */
+  }
+}

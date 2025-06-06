@@ -1,0 +1,76 @@
+/* File: src/pages/AboutUs.css */
+
+/* Container tổng thể */
+.aboutus-container {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 0 20px;
+  font-family: Arial, sans-serif;
+  color: #333;
+}
+
+/* Tiêu đề trang */
+.aboutus-title {
+  font-size: 32px;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+/* Đoạn văn giới thiệu */
+.aboutus-intro {
+  font-size: 16px;
+  line-height: 1.6;
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+/* Wrapper để tạo thanh cuộn ngang khi màn hình bé */
+.table-wrapper {
+  overflow-x: auto;
+}
+
+/* Bảng thông tin */
+.aboutus-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 500px;
+}
+
+.aboutus-table thead {
+  background-color: #f2f2f2;
+}
+
+.aboutus-table th,
+.aboutus-table td {
+  padding: 12px 16px;
+  text-align: left;
+  border: 1px solid #ddd;
+  font-size: 15px;
+}
+
+.aboutus-table th {
+  font-weight: 600;
+}
+
+/* Hover effect cho hàng */
+.aboutus-table tbody tr:hover {
+  background-color: #fafafa;
+}
+
+/* Responsive: khi màn hình dưới 600px */
+@media (max-width: 600px) {
+  .aboutus-title {
+    font-size: 28px;
+  }
+
+  .aboutus-intro {
+    font-size: 14px;
+  }
+
+  .aboutus-table th,
+  .aboutus-table td {
+    padding: 10px 12px;
+    font-size: 14px;
+  }
+}

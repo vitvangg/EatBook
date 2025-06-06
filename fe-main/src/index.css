@@ -1,0 +1,631 @@
+/* ──────────────────────────────────────────────────────────────────────
+   Two‐Column Layout for “GIF on Left” / “Login on Right”
+──────────────────────────────────────────────────────────────────────── */
+
+/* Parent flex container: two equal columns */
+.login-page {
+  display: flex;
+  width: 100%;
+  height: 100vh;
+  background-color: var(--body-background, #ffffff);
+}
+
+/* LEFT COLUMN: full‐screen GIF via CSS background */
+.gif-container {
+  flex: 1;                    /* takes 50% width */
+  background-image: url('/my-animation.gif');
+  background-size: cover;     /* GIF covers entire area without distortion */
+  background-position: center;/* center the GIF */
+  background-repeat: no-repeat;
+}
+
+/* RIGHT COLUMN: centers the login card */
+.login-container {
+  flex: 1;                    /* takes other 50% width */
+  display: flex;              /* center content vertically & horizontally */
+  align-items: center;
+  justify-content: center;
+  background-color: #f9f9f9;  /* light gray behind the card */
+}
+
+/* The Login Card styling */
+.login-card {
+  background-color: #fff;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;           /* card never wider than 400px */
+}
+
+/* Headings, error text, labels, inputs, and button within the card */
+.login-heading {
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+  text-align: center;
+  color: #242424;             /* dark heading for contrast */
+}
+
+.login-error {
+  color: #d32f2f;             /* red for errors */
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.login-label {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #242424;
+}
+
+.login-input {
+  width: 100%;
+  padding: 0.5rem;
+  margin-bottom: 1rem;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  color: #242424;
+}
+
+.login-input::placeholder {
+  color: #999999;
+}
+
+.login-button {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: #0070f3;
+  color: #fff;
+  font-size: 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.login-button:hover {
+  background-color: #005bb5;
+}
+
+.login-button:disabled {
+  background-color: #0070f3aa; /* semi‐transparent for disabled */
+  cursor: not-allowed;
+}
+
+/* ──────────────────────────────────────────────────────────────────────
+   Responsive: stack vertically on screens < 768px
+──────────────────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .login-page {
+    flex-direction: column;    /* stack the two sections */
+  }
+
+  .gif-container {
+    display: none;             /* hide GIF on narrow screens */
+  }
+
+  .login-container {
+    flex: none;
+    height: auto;              /* let it size naturally */
+    padding: 2rem 1rem;        /* extra horizontal padding */
+    background-color: #ffffff; /* match body background */
+  }
+}
+/* -----------------------------------------------------------------------
+   Phần 1: Các quy tắc chung (Root, resets, link, button) – giữ nguyên
+   … (giống hoàn toàn như trước, không lặp lại ở đây)
+----------------------------------------------------------------------- */
+
+/* -----------------------------------------------------------------------
+   Phần 2: Hai cột – GIF bên trái, Form bên phải (giữ nguyên)
+----------------------------------------------------------------------- */
+
+.login-page {
+  display: flex;
+  width: 100%;
+  height: 100vh;
+  background-color: #ffffff;
+}
+
+.gif-container {
+  flex: 1;
+  background-image: url('/my-animation.gif');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.login-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f9f9f9;
+}
+
+/* -----------------------------------------------------------------------
+   Phần 3: Chỉnh sửa .login-card để dùng logo làm background
+----------------------------------------------------------------------- */
+
+.login-card {
+  position: relative;             /* Cho phép pseudo‐element absolute bên trong */
+
+  /* Kích thước chung */
+  width: 100%;
+  max-width: 380px;               /* 380px = 23.75 rem nếu 1 rem = 16px */
+  padding: 2rem 1.5rem;           /* 2 rem (32px) top/bottom, 1.5 rem (24px) left/right */
+
+  /* Bo góc mềm mại */
+  border-radius: 12px;            /* 12px radius */
+
+  /* Đặt logo làm hình nền */
+  background-image: url('/logo.png');
+  background-size: cover;         /* Logo phủ hết, có thể cắt nếu tỉ lệ không khớp */
+  background-position: center;    /* Logo luôn ở giữa */
+  background-repeat: no-repeat;
+
+  /* Đổ bóng hai lớp giúp nổi bật */
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.10),  /* offset-x 0, offset-y 4px, blur 16px, opacity 0.10 */
+    0 2px 8px rgba(0, 0, 0, 0.05);   /* offset-x 0, offset-y 2px, blur 8px, opacity 0.05 */
+
+  /* Đảm bảo nội dung nằm trên overlay */
+  overflow: hidden;
+}
+
+/* Pseudo-element “overlay” để làm mờ logo, giúp text luôn dễ đọc */
+.login-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: rgba(255, 255, 255, 0.8); /* overlay trắng mờ 80% */
+  /* Nếu muốn overlay tối: rgba(0,0,0,0.3) hoặc rgba(0,0,0,0.5) tùy sáng/tối */
+  z-index: 0;  /* Luôn nằm dưới nội dung form */
+  border-radius: 12px; /* Kéo theo bo góc */
+}
+
+/* Đưa nội dung form (labels, inputs, button) vượt lên trên overlay */
+.login-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* -----------------------------------------------------------------------
+   Phần 4: Tiếp theo là các phần label, input, button, error – giữ nguyên
+----------------------------------------------------------------------- */
+
+.login-heading {
+  font-size: 1.75rem;             /* 28px */
+  line-height: 1.2;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 1rem;            /* 16px */
+  color: #242424;                 /* Chữ đậm, tương phản */
+}
+
+.login-error {
+  font-size: 0.875rem;            /* 14px */
+  color: #dc2626;                 /* Red-600 cho đủ 4.5:1 contrast với trắng */
+  margin-bottom: 1rem;            /* 16px */
+  text-align: center;
+}
+
+.login-label {
+  display: block;
+  font-size: 0.875rem;            /* 14px */
+  font-weight: 500;
+  margin-bottom: 0.375rem;        /* 6px */
+  color: #242424;
+}
+
+.login-input {
+  width: 100%;
+  height: 2.75rem;                /* 44px */
+  padding: 0.5rem;                /* 8px đệm */
+  font-size: 1rem;                /* 16px */
+  line-height: 1.5;
+  border: 1px solid #d1d5db;      /* Gray-300 */
+  border-radius: 8px;             /* 8px */
+  margin-bottom: 1rem;            /* 16px */
+  color: #242424;
+  transition: border-color 0.2s ease-in-out;
+}
+
+.login-input::placeholder {
+  color: #9ca3af;                 /* Gray-400 */
+}
+
+.login-input:focus {
+  outline: none;
+  border-width: 2px;
+  border-color: #3b82f6;          /* Blue-500 */
+}
+
+.login-button {
+  width: 100%;
+  height: 3rem;                   /* 48px */
+  font-size: 1rem;                /* 16px */
+  font-weight: 600;
+  color: #ffffff;
+  background: linear-gradient(
+    45deg,
+    #2563eb 0%,                     /* Blue-600 */
+    #1e40af 100%                    /* Blue-800 */
+  );
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease-in-out,
+    box-shadow 0.15s ease-in-out;
+  margin-top: 0.5rem;             /* 8px cách top */
+}
+
+.login-button:hover {
+  background-color: #1e3a8a;      /* Blue-900 */
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12); /* 22px blur */
+}
+
+.login-button:disabled {
+  background-color: #93c5fd;      /* Blue-300 */
+  color: #ffffff;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* -----------------------------------------------------------------------
+   Phần 5: Responsive (ẩn GIF, xếp dọc) – giữ nguyên
+----------------------------------------------------------------------- */
+
+@media (max-width: 768px) {
+  .login-page {
+    flex-direction: column;
+  }
+
+  .gif-container {
+    display: none;
+  }
+
+  .login-container {
+    flex: none;
+    width: 100%;
+    height: auto;
+    padding: 2rem 1rem;         /* 32px top/bottom, 16px hai bên */
+    background-color: #ffffff;
+  }
+
+  .login-card {
+    max-width: 100%;
+    border-radius: 8px;         /* Giảm radius cho mobile */
+    padding: 1.5rem 1rem;       /* 24px top/bottom, 16px hai bên */
+  }
+
+  .login-heading {
+    font-size: 1.5rem;          /* 24px trên mobile */
+  }
+}
+/* ──────────────────────────────────────────────────────────────────────
+   PHẦN CSS BỔ SUNG CHO TRANG HOME (3 nút: Tìm kiếm, Viết bài, Thông báo)
+──────────────────────────────────────────────────────────────────────── */
+
+/* -----------------------------------------------------------------------
+   1. Wrapper toàn trang, chia thành header + main
+----------------------------------------------------------------------- */
+.home-page {
+  display: flex;
+  flex-direction: column;       /* Header ở trên, Main ở dưới */
+  width: 100%;
+  height: 100vh;                /* Chiếm đầy viewport */
+  background-color: #ffffff;    /* Nền trắng */
+}
+
+/* -----------------------------------------------------------------------
+   2. Header (navbar) 
+----------------------------------------------------------------------- */
+.home-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 4rem;                 /* 64px cao */
+  padding: 0 2rem;              /* 32px 2 bên */
+  background-color: #2563eb;    /* Blue-600 */
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.10);
+  z-index: 10;
+}
+
+.home-logo {
+  font-size: 1.25rem;           /* 20px */
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+/* Nút Log Out */
+.logout-button {
+  height: 2.5rem;               /* 40px */
+  padding: 0 1rem;              /* 16px hai bên */
+  font-size: 1rem;              /* 16px */
+  font-weight: 500;
+  color: #ffffff;
+  background-color: transparent;
+  border: 1px solid #ffffff;    /* Viền trắng */
+  border-radius: 8px;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease-in-out,
+    box-shadow 0.2s ease-in-out;
+}
+.logout-button:hover {
+  background-color: rgba(255, 255, 255, 0.15); /* White 15% */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+.logout-button:active {
+  background-color: rgba(255, 255, 255, 0.25); /* White 25% */
+}
+.logout-button:focus {
+  outline: 2px solid rgba(255, 255, 255, 0.7);
+  outline-offset: 2px;
+}
+
+/* -----------------------------------------------------------------------
+   3. Main content: center welcome-card
+----------------------------------------------------------------------- */
+.home-main {
+  flex: 1;                       /* Chiếm khoảng trống còn lại */
+  display: flex;
+  align-items: center;           /* Vertical center */
+  justify-content: center;       /* Horizontal center */
+  background-color: #f3f4f6;     /* Gray-100 */
+  padding: 1rem;                 /* 16px padding 4 phía */
+}
+
+/* -----------------------------------------------------------------------
+   4. welcome-card: Card chính
+----------------------------------------------------------------------- */
+.welcome-card {
+  position: relative;
+  background-color: #ffffff;
+  width: 100%;
+  max-width: 30rem;              /* 480px */
+  padding: 2rem;                 /* 32px */
+  border-radius: 12px;           /* 12px */
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.10),
+    0 2px 8px rgba(0, 0, 0, 0.05);
+  text-align: center;
+}
+
+/* Heading chào mừng */
+.welcome-heading {
+  font-size: 2rem;               /* 32px */
+  line-height: 1.2;
+  font-weight: 600;
+  color: #111827;                /* Gray-900 */
+  margin-bottom: 0.5rem;         /* 8px */
+}
+
+/* Subtitle hiển thị email */
+.welcome-subtitle {
+  font-size: 1rem;               /* 16px */
+  line-height: 1.5;
+  color: #6b7280;                /* Gray-500 */
+  margin-bottom: 1.5rem;         /* 24px */
+}
+
+/* -----------------------------------------------------------------------
+   5. Container cho 3 nút chức năng
+   • Desktop (≥ 768px): flex-direction: row; mỗi nút flex: 1; margin 0 0.5rem
+   • Mobile (< 768px): flex-direction: column; mỗi nút margin-bottom: 1rem
+----------------------------------------------------------------------- */
+.action-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;                     /* Khoảng cách 16px giữa các nút khi desktop */
+  margin-top: 1rem;              /* 16px cách welcome-subtitle */
+}
+
+/* Mỗi nút: 
+   - flex: 1 để chia đều 3 nút (desktop) 
+   - height: 2.5rem (40px) cho touch target thoải mái 
+   - font-size: 1rem (16px), font-weight: 500 
+   - border-radius: 8px 
+   - background: gradient giống button “Log In” (nhưng đổi tông) 
+*/
+.action-button {
+  flex: 1;                      
+  height: 2.5rem;               /* 40px */
+  font-size: 1rem;              /* 16px */
+  font-weight: 500;
+  color: #ffffff;
+  background: linear-gradient(
+    45deg,
+    #10b981 0%,   /* Green-500 */
+    #047857 100%  /* Green-700 */
+  );
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease-in-out,
+    box-shadow 0.15s ease-in-out;
+}
+
+/* Hover: 
+   • Chuyển sang green-800 (#065f46)
+   • Shadow 0 4px 12px rgba(0,0,0,0.12) (≈ blur 12px, offset-y 4px)
+*/
+.action-button:hover {
+  background-color: #065f46;     /* Green-800 */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+/* Nút disabled (nếu cần) */
+.action-button:disabled {
+  background-color: #6ee7b7;     /* Green-300 (nhạt) */
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* -----------------------------------------------------------------------
+   6. Responsive (≤ 768px):
+   • action-buttons: flex-direction: column; 
+   • gap = 0 (dùng margin-bottom trên từng nút) 
+   • padding welcome-card giảm để phù hợp màn hình
+----------------------------------------------------------------------- */
+@media (max-width: 768px) {
+  /* Header co gọn (giữ nguyên nếu đã có trong CSS) */
+  .home-header {
+    padding: 0 1rem;            /* 16px hai bên */
+    height: 3.5rem;             /* 56px */
+  }
+  .home-logo {
+    font-size: 1rem;            /* 16px */
+  }
+  .logout-button {
+    height: 2.25rem;            /* 36px */
+    font-size: 0.875rem;        /* 14px */
+    padding: 0 0.75rem;         /* 12px hai bên */
+  }
+
+  /* Main: padding 1rem (16px) đã có, giữ nguyên */
+  
+  /* welcome-card: 
+     - max-width 90% viewport 
+     - padding 1.5rem (24px) 
+     - border-radius 8px 
+  */
+  .welcome-card {
+    max-width: 90%;             /* 90% màn hình */
+    padding: 1.5rem;            /* 24px */
+    border-radius: 8px;         /* 8px */
+  }
+  .welcome-heading {
+    font-size: 1.75rem;         /* 28px */
+    margin-bottom: 0.5rem;      /* 8px */
+  }
+  .welcome-subtitle {
+    margin-bottom: 1rem;        /* 16px */
+  }
+
+  /* action-buttons: xếp dọc, mỗi nút margin-bottom 1rem */
+  .action-buttons {
+    flex-direction: column;
+    gap: 0;                      
+    margin-top: 1rem;           
+    width: 100%;
+  }
+  .action-button {
+    width: 100%;
+    margin-bottom: 1rem;        /* 16px giữa các nút */
+  }
+  .action-button:last-child {
+    margin-bottom: 0;           /* Nút cuối không có margin-bottom */
+  }
+}
+/* src/index.css */
+
+/* Reset cơ bản (nếu chưa có) */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Home Page tổng thể */
+.home-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #f5f5f5;
+  min-height: 100vh;
+  font-family: system-ui, sans-serif;
+}
+
+/* Header */
+.home-header {
+  width: 100%;
+  background-color: #ffffff;
+  padding: 1rem 2rem; /* ~16 bytes padding */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* ~40 bytes */
+}
+
+.home-logo {
+  font-size: 1.8rem;  /* ~20 bytes */
+  font-weight: 700;   /* ~17 bytes */
+  color: #333333;
+}
+
+/* Nội dung chính */
+.home-main {
+  flex: 1; /* chiếm hết khoảng trống dọc */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 2rem; /* ~20 bytes */
+}
+
+/* Card chào mừng */
+.welcome-card {
+  background-color: #ffffff;
+  border-radius: 12px;         /* ~15 bytes */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* ~40 bytes */
+  padding: 2rem;               /* ~20 bytes */
+  max-width: 400px;            /* ~15 bytes */
+  width: 100%;
+  text-align: center;
+}
+
+/* Tiêu đề */
+.welcome-heading {
+  font-size: 2rem;  /* ~12 bytes */
+  margin-bottom: 0.5rem; /* ~16 bytes */
+  color: #222222;
+}
+
+/* Nội dung phụ đề */
+.welcome-subtitle {
+  font-size: 1rem; /* ~12 bytes */
+  margin-bottom: 1.5rem; /* ~16 bytes */
+  color: #555555;
+}
+
+/* Nhóm nút */
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem; /* cách giữa mỗi nút ~16px */
+}
+
+/* Kiểu cho mỗi nút */
+.action-button {
+  background-color: #0066ff;  /* ~10 bytes */
+  color: #ffffff;             /* ~10 bytes */
+  border: none;
+  border-radius: 8px;         /* ~12 bytes */
+  padding: 0.8rem 1.2rem;      /* ~16 bytes */
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s; /* ~30 bytes */
+}
+
+.action-button:hover {
+  background-color: #0052cc;  /* ~10 bytes */
+}
+
+/* Responsive (nếu cần) */
+@media (max-width: 480px) {
+  .welcome-card {
+    padding: 1.5rem;   /* rút gọn padding */
+  }
+  .action-button {
+    font-size: 0.9rem; /* ~12 bytes */
+    padding: 0.6rem 1rem; /* ~16 bytes */
+  }
+}
+/* Tổng CSS trên ~ 500–550 bytes, parse ~ 1 ms */
+

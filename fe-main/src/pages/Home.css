@@ -1,0 +1,120 @@
+/* src/pages/Home.css  (≈ 100 bytes) */
+
+.home-root {
+  padding: 16px;
+  max-width: 100%;
+  margin: 0 auto;
+  font-family: Arial, sans-serif;
+}
+
+.home-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.home-header h1 {
+  font-size: 1.6rem;
+  color: #333333;
+}
+
+.logout-btn {
+  padding: 8px 16px;
+  background-color: #d93025;
+  /* đỏ */
+  color: #ffffff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.logout-btn:hover {
+  background-color: #ae2520;
+}
+
+.home-actions {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.action-button {
+  flex: 1;
+  /* mỗi nút chiếm 1 phần bằng nhau */
+  padding: 12px 0;
+  font-size: 1.1rem;
+  font-weight: 500;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  color: #ffffff;
+  transition: opacity 0.2s;
+}
+
+.search-btn {
+  background: linear-gradient(90deg, #fbbc05, #ff8338);
+  /* vàng cam */
+}
+
+.search-btn:hover {
+  opacity: 0.9;
+}
+
+.write-btn {
+  background: linear-gradient(90deg, #4285f4, #6fa9ff);
+  /* xanh dương */
+}
+
+.write-btn:hover {
+  opacity: 0.9;
+}
+
+.notify-btn {
+  background: linear-gradient(90deg, #34a853, #6bdc7e);
+  /* xanh lá */
+}
+
+.notify-btn:hover {
+  opacity: 0.9;
+}
+
+.postgrid-placeholder {
+  padding: 16px;
+  border: 2px dashed #cccccc;
+  text-align: center;
+  color: #777777;
+}
+
+/* Từ 800px trở lên */
+@media (min-width: 800px) {
+  .home-root {
+    padding: 24px;
+    max-width: 800px;
+  }
+
+  .home-header h1 {
+    font-size: 2rem;
+  }
+
+  .home-actions {
+    gap: 24px;
+  }
+}
+
+/* Từ 1200px trở lên */
+@media (min-width: 1200px) {
+  .home-root {
+    max-width: 1200px;
+    padding: 32px;
+  }
+
+  .home-header h1 {
+    font-size: 2.4rem;
+  }
+
+  .home-actions {
+    gap: 32px;
+  }
+}
